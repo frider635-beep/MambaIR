@@ -2,7 +2,7 @@
     <img src="assets/logo.png" width="300">
 </p>
 
-
+ 
 
 # News: MambaIRv2 is now available!
 The updated MambaIRv2 is totally compatible with the previous MambaIR. We also keep the code of MambaIR in [another branch](https://github.com/csguoh/MambaIR/tree/mambair) for your possible revisiting.
