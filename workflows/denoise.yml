@@ -1,0 +1,63 @@
+name: MambaIRv2 Denoise
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_url:
+        description: "Input image URL"
+        required: true
+
+jobs:
+  run-denoise:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: 3.10
+
+    # =========================
+    # 安装依赖（关键稳定版）
+    # =========================
+    - name: Install dependencies
+      run: |
+        pip install torch==2.0.1 torchvision==0.15.2
+        pip install basicsr opencv-python
+        pip install --no-cache-dir mamba-ssm==1.0.1
+        pip install --no-cache-dir causal_conv1d
+
+    # =========================
+    # 下载模型
+    # =========================
+    - name: Download pretrained model
+      run: |
+        mkdir -p experiments/pretrained_models
+        wget -O experiments/pretrained_models/model.pth \
+        https://github.com/csguoh/MambaIR/releases/download/v1.0/mambairv2_denoise.pth
+
+    # =========================
+    # 下载输入图像
+    # =========================
+    - name: Download image
+      run: |
+        wget ${{ github.event.inputs.image_url }} -O input.png
+
+    # =========================
+    # 运行推理
+    # =========================
+    - name: Run inference
+      run: |
+        python infer.py
+
+    # =========================
+    # 上传结果
+    # =========================
+    - name: Upload result
+      uses: actions/upload-artifact@v4
+      with:
+        name: denoise-result
+        path: results/
